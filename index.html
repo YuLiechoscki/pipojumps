@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Pipo Runner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+  <main id="stage" class="menu" aria-label="Pipo Runner">
+    <div class="sun"></div>
+    <div id="clouds"></div>
+    <div class="hills far"></div>
+    <div class="hills near"></div>
+    <div class="night-sky"></div>
+    <div class="ground"></div>
+
+    <div id="player" class="chick" data-skin="pipo" aria-hidden="true">
+      <div class="leg back"></div>
+      <div class="leg front"></div>
+      <div class="body"><div class="wing"></div><div class="eye"></div><div class="beak"></div></div>
+    </div>
+
+    <button id="ghost-prev" class="ghost prev" tabindex="-1" aria-label="Personagem anterior">
+      <div class="chick" data-skin="pipo" aria-hidden="true">
+        <div class="leg back"></div>
+        <div class="leg front"></div>
+        <div class="body"><div class="wing"></div><div class="eye"></div><div class="beak"></div></div>
+      </div>
+    </button>
+    <button id="ghost-next" class="ghost next" tabindex="-1" aria-label="Próximo personagem">
+      <div class="chick" data-skin="pipo" aria-hidden="true">
+        <div class="leg back"></div>
+        <div class="leg front"></div>
+        <div class="body"><div class="wing"></div><div class="eye"></div><div class="beak"></div></div>
+      </div>
+    </button>
+
+    <div id="obstacles"></div>
+
+    <div id="hud">
+      <span>Pontos <b id="score">0</b></span>
+      <span>Nível <b id="level">1</b></span>
+      <span>Recorde <b id="best">0</b></span>
+    </div>
+    <div id="level-banner"></div>
+
+    <section id="start-screen" class="screen visible">
+      <h1 class="logo">
+        <span class="logo-top">Pipo</span>
+        <span class="logo-sub">Runner</span>
+      </h1>
+
+      <button id="play-btn" class="btn btn-play">JOGAR</button>
+
+      <div class="skin-picker">
+        <button id="skin-prev" class="arrow" aria-label="Personagem anterior">‹</button>
+        <div class="skin-info">
+          <b id="skin-name">Pipo</b>
+          <div id="skin-dots" class="skin-dots"></div>
+        </div>
+        <button id="skin-next" class="arrow" aria-label="Próximo personagem">›</button>
+      </div>
+
+      <p class="hints">
+        <span class="hints-keys"><kbd>Espaço</kbd> pular &nbsp;·&nbsp; <kbd>↓</kbd> abaixar &nbsp;·&nbsp; <kbd>←</kbd><kbd>→</kbd> personagem</span>
+        <span class="hints-touch">Toque à direita para pular · segure à esquerda para abaixar</span>
+      </p>
+    </section>
+
+    <section id="over-screen" class="screen">
+      <h2>GAME OVER</h2>
+      <p class="result">Pontos: <b id="final-score">0</b> &nbsp; Recorde: <b id="final-best">0</b></p>
+      <p id="new-record" class="record-note">Novo recorde!</p>
+      <button id="retry-btn" class="btn">JOGAR NOVAMENTE</button>
+    </section>
+  </main>
+  <script src="js/script.js?v=5"></script>
+</body>
+</html>

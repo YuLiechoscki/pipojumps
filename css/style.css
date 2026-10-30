@@ -1,0 +1,440 @@
+/* Cores principais do cenário e do personagem. */
+:root {
+  --ink: #42309b;
+  --chick: #ffcf4a;
+  --beak: #ff8a3d;
+  --grass: #8fdc8f;
+  --soil: #2dab78;
+  --soil-dark: #185d46;
+  --stump: #8a5530;
+  --bush: #1f5a3f;
+  --ground-h: 80px;
+  /* Estas posições são atualizadas pelo JavaScript para criar o movimento do cenário. */
+  --g: 0px; --h1: 0px; --h2: 0px;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #1b1638;
+  font-family: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Área visível do jogo. */
+#stage {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 800px; height: 400px;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  background: linear-gradient(#5b4fb0 0%, #5b4fb0 55%, #ffd9a6 100%);
+  border-radius: 12px;
+}
+
+.sun {
+  position: absolute; right: 90px; top: 40px;
+  width: 70px; height: 70px; border-radius: 50%;
+  background: #fff1c2; box-shadow: 0 0 40px 14px rgba(255, 226, 160, .45);
+}
+
+.cloud {
+  position: absolute; height: 26px; border-radius: 20px;
+  background: rgba(255, 255, 255, .7);
+}
+.cloud::before {
+  content: ""; position: absolute; left: 22%; top: -14px;
+  width: 40%; height: 28px; border-radius: 50%; background: inherit;
+}
+
+.hills {
+  position: absolute; left: 0; right: 0;
+  bottom: var(--ground-h);
+  background-repeat: repeat-x;
+}
+.hills.far {
+  height: 120px; background-size: 400px 120px;
+  background-position: var(--h1) bottom;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='120'%3E%3Cpath d='M0 120V70Q100 0 200 70T400 70V120Z' fill='%23574fa6'/%3E%3C/svg%3E");
+}
+.hills.near {
+  height: 70px; background-size: 300px 70px;
+  background-position: var(--h2) bottom;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='70'%3E%3Cpath d='M0 70V40Q75 0 150 40T300 40V70Z' fill='%23356f8c'/%3E%3C/svg%3E");
+}
+
+.ground {
+  position: absolute; left: 0; right: 0; bottom: 0; height: var(--ground-h);
+  background-color: var(--soil);
+  background-image: radial-gradient(circle at 10px 10px, var(--soil-dark) 4px, transparent 5px);
+  background-size: 70px 36px;
+  background-position: var(--g) 22px;
+}
+.ground::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 12px;
+  background-color: var(--grass);
+  background-image: linear-gradient(135deg, transparent 50%, #6fc57b 50%);
+  background-size: 24px 12px;
+  background-position: var(--g) 0;
+}
+
+/* ---------- Personagem (as cores vêm das variáveis --c-*) ---------- */
+/* Visual do personagem (usado pelo jogador e pelas prévias do menu) */
+.chick {
+  --c-body: var(--chick);
+  --c-wing: #f0b72f;
+  --c-beak: var(--beak);
+  --c-leg: var(--beak);
+  --c-eye: var(--ink);
+}
+
+#player {
+  --s: 1;
+  position: absolute; left: 80px; bottom: var(--ground-h);
+  width: 44px; height: 48px;
+  transform-origin: 50% 100%;
+  scale: var(--s);
+  transition: left .6s ease, scale .6s ease;
+  will-change: transform;
+}
+/* No menu o personagem escolhido fica no centro e maior */
+#stage.menu #player { left: 378px; --s: 1.4; }
+
+/* Prévias do anterior e do próximo (só aparecem no menu) */
+.ghost {
+  position: absolute; bottom: var(--ground-h);
+  width: 44px; height: 48px; padding: 0; border: 0; background: none; cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+.ghost.prev { left: 283px; }
+.ghost.next { left: 473px; }
+#stage.menu .ghost { opacity: .4; pointer-events: auto; }
+#stage.menu .ghost:hover { opacity: .7; }
+.ghost .chick {
+  position: relative; width: 44px; height: 48px;
+  transform: scale(.7); transform-origin: 50% 100%;
+}
+.ghost .body, .ghost .leg { animation: none; }
+
+#player.pop { animation: pop .3s ease; }
+@keyframes pop { 0%, 100% { scale: var(--s); } 50% { scale: calc(var(--s) * 1.25); } }
+
+.chick .body {
+  position: absolute; left: 0; top: 0; width: 44px; height: 40px;
+  background: var(--c-body); border-radius: 50% 50% 45% 45%;
+  animation: bob .3s ease-in-out infinite;
+}
+.eye { position: absolute; right: 10px; top: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--c-eye); }
+.beak {
+  position: absolute; right: -9px; top: 17px; width: 0; height: 0;
+  border-left: 11px solid var(--c-beak);
+  border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+}
+.wing { position: absolute; left: 6px; top: 18px; width: 18px; height: 12px; border-radius: 50%; background: var(--c-wing); }
+.leg {
+  position: absolute; bottom: 0; width: 5px; height: 14px; border-radius: 3px;
+  background: var(--c-leg); transform-origin: top center;
+  animation: step .3s linear infinite;
+}
+.leg.back  { left: 14px; animation-delay: -.15s; }
+.leg.front { left: 26px; }
+
+#player.airborne .leg { animation-play-state: paused; transform: rotate(-30deg); }
+#player.airborne .body { animation-play-state: paused; }
+#stage.over #player .leg, #stage.over #player .body { animation-play-state: paused; }
+
+@keyframes step { 0%, 100% { transform: rotate(35deg); } 50% { transform: rotate(-35deg); } }
+@keyframes bob  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+/* ---------- Skins ---------- */
+
+/* Rosinha: pintinho rosa com laço */
+.chick[data-skin="rosa"] {
+  --c-body: #ff9ec7; --c-wing: #f06aa5; --c-beak: #ffb347; --c-leg: #ffb347;
+}
+.chick[data-skin="rosa"] .body::before {
+  content: ""; position: absolute; left: 24px; top: -5px;
+  width: 16px; height: 11px; border-radius: 50%; background: #ff3d85;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .35);
+}
+
+/* Pingu: pinguim com barriga branca */
+.chick[data-skin="pingu"] {
+  --c-body: #2b2f4a; --c-wing: #1c1f35; --c-beak: #ff9f1c; --c-leg: #ff9f1c; --c-eye: #fff;
+}
+.chick[data-skin="pingu"] .body::before {
+  content: ""; position: absolute; right: 3px; bottom: 1px;
+  width: 24px; height: 26px; border-radius: 50%; background: #f4f6ff;
+}
+
+/* Coelho: orelhas compridas */
+.chick[data-skin="coelho"] {
+  --c-body: #f4f1ff; --c-wing: #d8d2f0; --c-beak: #ff8fa3; --c-leg: #ffb3c1;
+}
+.chick[data-skin="coelho"] .body::before,
+.chick[data-skin="coelho"] .body::after {
+  content: ""; position: absolute; top: -17px; width: 9px; height: 24px;
+  border-radius: 50%; background: var(--c-body);
+  box-shadow: inset 0 0 0 2px #ffc9d6;
+}
+.chick[data-skin="coelho"] .body::before { left: 12px; transform: rotate(-8deg); }
+.chick[data-skin="coelho"] .body::after  { left: 26px; transform: rotate(8deg); }
+
+/* Gatinho: orelhas triangulares */
+.chick[data-skin="gato"] {
+  --c-body: #9aa3b8; --c-wing: #7b8499; --c-beak: #ff8fa3; --c-leg: #7b8499;
+}
+.chick[data-skin="gato"] .body::before,
+.chick[data-skin="gato"] .body::after {
+  content: ""; position: absolute; top: -9px; width: 0; height: 0;
+  border-left: 9px solid transparent; border-right: 9px solid transparent;
+  border-bottom: 15px solid var(--c-body);
+}
+.chick[data-skin="gato"] .body::before { left: 3px; }
+.chick[data-skin="gato"] .body::after  { left: 23px; }
+
+/* Robô: corpo quadrado com antena */
+.chick[data-skin="robo"] {
+  --c-body: #b9c3d9; --c-wing: #7f8aa6; --c-beak: #ff5d5d; --c-leg: #7f8aa6; --c-eye: #19e0ff;
+}
+.chick[data-skin="robo"] .body { border-radius: 10px 10px 8px 8px; }
+.chick[data-skin="robo"] .eye { box-shadow: 0 0 6px 2px rgba(25, 224, 255, .7); }
+.chick[data-skin="robo"] .body::before {
+  content: ""; position: absolute; left: 20px; top: -11px;
+  width: 3px; height: 12px; background: #7f8aa6;
+}
+.chick[data-skin="robo"] .body::after {
+  content: ""; position: absolute; left: 17px; top: -17px;
+  width: 9px; height: 9px; border-radius: 50%; background: #ff4d4d;
+  box-shadow: 0 0 6px 2px rgba(255, 77, 77, .6);
+}
+
+/* ---------- Abaixar ---------- */
+#player.ducking .body { top: 16px; height: 24px; border-radius: 50%; }
+#player.ducking .eye  { top: 5px; }
+#player.ducking .beak { top: 9px; }
+#player.ducking .wing { top: 8px; height: 10px; }
+#player.ducking .leg  { height: 9px; }
+
+/* ---------- Obstáculos ---------- */
+.obstacle { position: absolute; left: 0; bottom: var(--ground-h); will-change: transform; }
+
+.obstacle.stump, .obstacle.tall {
+  background: var(--stump); border-radius: 6px 6px 2px 2px;
+  box-shadow: inset 0 8px 0 #c48a55, inset -6px 0 0 rgba(0, 0, 0, .15);
+}
+.obstacle.bush {
+  background: var(--bush); border-radius: 50% 50% 8px 8px;
+  box-shadow: inset 10px 8px 0 -2px #2f7d57, inset -12px 6px 0 -4px #2f7d57;
+}
+
+/* Pedra */
+.obstacle.rock {
+  background: #8b90a8; border-radius: 50% 50% 8px 8px / 80% 80% 8px 8px;
+  box-shadow: inset 7px 5px 0 -1px #a9aec4, inset -8px -3px 0 rgba(0, 0, 0, .18);
+}
+
+/* Espinhos */
+.obstacle.spikes {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='20' preserveAspectRatio='none'%3E%3Cpath d='M0 20L7 0L14 20Z' fill='%23dfe3f7'/%3E%3C/svg%3E");
+  background-size: 14px 100%;
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .25));
+}
+
+/* Tronco comprido */
+.obstacle.log {
+  background: #7a4a28; border-radius: 12px;
+  box-shadow: inset -10px 0 0 #c48a55, inset 0 5px 0 rgba(255, 255, 255, .12), inset 0 -5px 0 rgba(0, 0, 0, .15);
+}
+
+/* Cacto */
+.obstacle.cactus {
+  background: #2f8f4e; border-radius: 12px 12px 3px 3px;
+  box-shadow: inset -5px 0 0 rgba(0, 0, 0, .15);
+}
+.obstacle.cactus::before, .obstacle.cactus::after {
+  content: ""; position: absolute; width: 11px; background: #2f8f4e; border-radius: 6px;
+}
+.obstacle.cactus::before { left: -8px; top: 32%; height: 16px; }
+.obstacle.cactus::after  { right: -8px; top: 18%; height: 20px; }
+
+/* Bola quicando: a caixa só se move; quem gira é o ::before */
+.obstacle.ball::before {
+  content: ""; position: absolute; inset: 0;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+.obstacle.ball::before {
+  background: conic-gradient(#ff6b6b 0 25%, #ffd166 0 50%, #ff6b6b 0 75%, #ffd166 0);
+  box-shadow: inset -5px -5px 0 rgba(0, 0, 0, .15);
+}
+@keyframes spin { to { rotate: -360deg; } }
+
+/* Pássaros */
+.obstacle.bird {
+  background: #e8505b; border-radius: 60% 40% 50% 50%;
+  box-shadow: inset -8px 0 0 rgba(0, 0, 0, .12);
+}
+.obstacle.bird::before {
+  content: ""; position: absolute; left: -9px; top: 9px;
+  border-right: 10px solid var(--beak);
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+}
+.obstacle.bird::after {
+  content: ""; position: absolute; left: 14px; top: -12px;
+  width: 20px; height: 16px; background: #b8323f; border-radius: 50% 50% 0 0;
+  transform-origin: bottom center;
+  animation: flap .25s ease-in-out infinite alternate;
+}
+.obstacle.bird.purple { background: #7b4bb7; }
+.obstacle.bird.purple::after { background: #5a3390; }
+.obstacle.bird.blue { background: #3d8bd9; }
+.obstacle.bird.blue::after { background: #2a64a3; }
+.obstacle.bird.gold { background: #f2a93b; }
+.obstacle.bird.gold::after { background: #c97d1d; }
+@keyframes flap { from { transform: scaleY(1); } to { transform: scaleY(-1); } }
+
+/* Pontuação e recorde mostrados na tela. */
+#hud {
+  position: absolute; top: 12px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between;
+  color: #fff; font-size: 22px; font-weight: 500; text-shadow: 0 2px 0 rgba(42, 34, 80, .5);
+  pointer-events: none;
+  transition: opacity .3s;
+}
+#hud b { font-weight: 800; }
+
+/* Só o recorde aparece no HUD durante o menu */
+#stage.menu #hud span:not(:last-child) { visibility: hidden; }
+
+/* Telas do menu inicial e do fim da partida. */
+.screen {
+  position: absolute; inset: 0 0 130px 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  color: #fff; text-align: center;
+  opacity: 0; visibility: hidden; transform: translateY(-10px);
+  transition: opacity .4s ease, transform .4s ease, visibility .4s;
+}
+.screen.visible { opacity: 1; visibility: visible; transform: none; }
+
+h1, h2 { font-weight: 800; line-height: 1; text-shadow: 0 4px 0 var(--ink); }
+h1 { font-size: 64px; }
+h2 { font-size: 54px; }
+.result { font-size: 22px; }
+.record-note { color: var(--chick); font-weight: 800; font-size: 20px; min-height: 1em; }
+.hint { font-size: 16px; line-height: 1.2; opacity: .95; }
+kbd {
+  padding: 2px 7px; border-radius: 6px;
+  background: #fff; color: var(--ink);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+  font-family: inherit; font-weight: 800;
+}
+
+.btn {
+  font: inherit; font-size: 24px; font-weight: 800; color: var(--ink);
+  padding: 6px 34px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--chick); box-shadow: 0 5px 0 #c9962a;
+  transition: transform .1s, box-shadow .1s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #c9962a; }
+.btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* ---------- Seletor de personagem ---------- */
+.skin-picker { display: flex; align-items: center; gap: 6px; }
+.skin-info { display: flex; flex-direction: column; align-items: center; min-width: 120px; gap: 5px; line-height: 1; }
+#skin-name { font-size: 22px; font-weight: 800; text-shadow: 0 2px 0 rgba(42, 34, 80, .6); }
+.skin-dots { display: flex; gap: 6px; }
+.skin-dots i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255, 255, 255, .3);
+  transition: background .2s, transform .2s;
+}
+.skin-dots i.on { background: var(--chick); transform: scale(1.35); }
+.arrow {
+  font: inherit; font-size: 26px; font-weight: 800; line-height: 1; color: #fff;
+  width: 34px; height: 34px; padding: 0 0 3px; border: 0; border-radius: 50%; cursor: pointer;
+  background: transparent;
+  transition: background .15s, transform .1s;
+}
+.arrow:hover { background: rgba(255, 255, 255, .18); }
+.arrow:active { transform: scale(.9); }
+.arrow:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Pequena animação quando o personagem encosta em um obstáculo. */
+#stage.shake { animation: shake .35s; }
+@keyframes shake {
+  0%, 100% { margin-left: 0; } 25% { margin-left: -8px; } 75% { margin-left: 8px; }
+}
+
+/* ---------- Noite ---------- */
+.night-sky {
+  position: absolute; left: 0; right: 0; top: 0; bottom: var(--ground-h);
+  background: linear-gradient(rgba(10, 8, 45, .7), rgba(40, 20, 70, .35));
+  opacity: 0; transition: opacity 2s ease; pointer-events: none;
+}
+#stage.night .night-sky { opacity: 1; }
+.sun { transition: background .8s, box-shadow .8s; }
+#stage.night .sun {
+  background: #e9ecff; box-shadow: 0 0 30px 10px rgba(190, 200, 255, .35);
+}
+
+/* ---------- Aviso de nível ---------- */
+#level-banner {
+  position: absolute; left: 0; right: 0; top: 90px; text-align: center;
+  color: #fff; font-size: 44px; font-weight: 800; text-shadow: 0 4px 0 var(--ink);
+  opacity: 0; transform: scale(.8); pointer-events: none;
+  transition: opacity .3s, transform .3s;
+}
+#level-banner.show { opacity: 1; transform: none; }
+
+/* ---------- Tela inicial ---------- */
+#start-screen { inset: 0 0 175px 0; gap: 10px; }
+
+/* Logo */
+.logo { display: flex; flex-direction: column; align-items: center; gap: 6px; text-shadow: none; }
+.logo-top {
+  font-size: 64px; font-weight: 800; line-height: .85; letter-spacing: 2px;
+  color: var(--chick);
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 5px 0 var(--ink);
+  animation: logo-bob 2.4s ease-in-out infinite;
+}
+.logo-sub {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 16px; font-weight: 800; letter-spacing: 10px; text-indent: 10px;
+  text-transform: uppercase; color: #fff; opacity: .9;
+}
+.logo-sub::before, .logo-sub::after {
+  content: ""; width: 36px; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .45);
+}
+@keyframes logo-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+/* Botão jogar */
+.btn-play { font-size: 26px; padding: 6px 48px; animation: btn-pulse 1.8s ease-in-out infinite; }
+@keyframes btn-pulse { 0%, 100% { scale: 1; } 50% { scale: 1.04; } }
+
+/* Dicas: uma linha discreta */
+.hints { font-size: 14px; line-height: 1.2; opacity: .8; }
+.hints kbd { font-size: 12px; padding: 1px 6px; margin: 0 1px; }
+.hints-touch { display: none; }
+@media (hover: none) {
+  .hints-keys { display: none; }
+  .hints-touch { display: inline; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen, #player, .ghost { transition: none; }
+  #stage.shake { animation: none; }
+  #player.pop { animation: none; }
+  .obstacle.bird::after, .obstacle.ball::before,   .night-sky, #level-banner { transition: none; }
+  .logo-top, .btn-play { animation: none; }
+}
